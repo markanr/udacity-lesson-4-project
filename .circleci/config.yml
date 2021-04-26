@@ -51,7 +51,6 @@ jobs:
             npm install
             echo "Building Frontend"
             npm run build
-            return 1
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
@@ -340,15 +339,20 @@ workflows:
     jobs:
       - build-frontend:
           context: SlackAlert
-      - build-backend
+      - build-backend:
+          context: SlackAlert
       - test-frontend:
           requires: [build-frontend]
+          context: SlackAlert
       - test-backend:
           requires: [build-backend]
+          context: SlackAlert
       - scan-backend:
           requires: [build-backend]
+          context: SlackAlert
       - scan-frontend:
           requires: [build-frontend]
+          context: SlackAlert
       # - deploy-infrastructure:
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       #     filters:
