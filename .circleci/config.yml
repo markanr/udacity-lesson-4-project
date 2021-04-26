@@ -123,7 +123,7 @@ jobs:
             cd frontend
             npm install
             echo "Scanning for frontend package vulnerabilities"
-            npm audit --audit-level=critical
+            npm audit fix --audit-level=critical --force
       - save_cache:
           paths: [backend/node_modules]
           key: frontend-scan
@@ -142,7 +142,7 @@ jobs:
             cd backend
             npm install
             echo "Scanning for package vulnerabilities"
-            npm audit --audit-level=critical
+            npm audit fix --audit-level=critical --force
       - save_cache:
           paths: [backend/node_modules]
           key: backend-scan
