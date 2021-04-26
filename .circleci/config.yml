@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  slack: circleci/slack@4.0
+  slack: circleci/slack@4.4.0
 
 # commands:
 #   destroy-environment:
@@ -338,7 +338,8 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
+      - build-frontend:
+          context: SlackAlert
       - build-backend
       - test-frontend:
           requires: [build-frontend]
