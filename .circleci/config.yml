@@ -6,7 +6,7 @@ orbs:
 Parameters:
   project_name:
     Description: Project name.
-    Type: String
+    type: string
 
 commands:
   destroy-environment:
@@ -211,7 +211,7 @@ jobs:
             - project/.circleci/ansible/inventory.txt
             - project/backend/
       - destroy-environment:
-          WorkID: ${CIRCLE_WORKFLOW_ID}
+          WorkflowID: ${CIRCLE_WORKFLOW_ID}
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -354,22 +354,22 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend:
-          context: SlackAlert
-      - build-backend:
-          context: SlackAlert
-      - test-frontend:
-          requires: [build-frontend]
-          context: SlackAlert
-      - test-backend:
-          requires: [build-backend]
-          context: SlackAlert
-      - scan-backend:
-          requires: [build-backend]
-          context: SlackAlert
-      - scan-frontend:
-          requires: [build-frontend]
-          context: SlackAlert
+      # - build-frontend:
+      #     context: SlackAlert
+      # - build-backend:
+      #     context: SlackAlert
+      # - test-frontend:
+      #     requires: [build-frontend]
+      #     context: SlackAlert
+      # - test-backend:
+      #     requires: [build-backend]
+      #     context: SlackAlert
+      # - scan-backend:
+      #     requires: [build-backend]
+      #     context: SlackAlert
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      #     context: SlackAlert
       - deploy-infrastructure:
           context: SlackAlert
 
