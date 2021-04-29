@@ -210,6 +210,7 @@ jobs:
                   --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
                   --output text >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
+            return 1
       - persist_to_workspace:
           root: ~/
           paths:
