@@ -20,8 +20,6 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            echo "<<parameters.WorkflowID>>"
-            echo "<< parameters.WorkflowID >>"
             aws cloudformation delete-stack --stack-name backend-stack-infra-<<parameters.WorkflowID>>
             aws cloudformation delete-stack --stack-name frontend-stack-infra-<<parameters.WorkflowID>> 
 
@@ -207,14 +205,13 @@ jobs:
                   --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
                   --output text >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
-            exit 1
       - persist_to_workspace:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
             - project/backend/
       - destroy-environment:
-          WorkflowID: ${CIRCLE_WORKFLOW_ID}
+          WorkID: ${CIRCLE_WORKFLOW_ID}
       - slack/notify:
           event: fail
           template: basic_fail_1
