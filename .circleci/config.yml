@@ -3,18 +3,27 @@ version: 2.1
 orbs:
   slack: circleci/slack@4.4.0
 
-# commands:
-#   destroy-environment:
-#     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-#     parameters:
-#       # Add parameter here   
-#     steps:
-#       - run:
-#           name: Destroy environments
-#           when: on_fail
-#           command: |
-#             # Your code here
-#             exit 1
+Parameters:
+  project_name:
+    Description: Project name.
+    Type: String
+
+commands:
+  destroy-environment:
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      WorkflowID:
+        type: String      
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            echo "<<parameters.WorkflowID>>"
+            echo "<< parameters.WorkflowID >>"
+            aws cloudformation delete-stack --stack-name backend-stack-infra-<<parameters.WorkflowID>>
+            aws cloudformation delete-stack --stack-name frontend-stack-infra-<<parameters.WorkflowID>> # dodati zastitu?
+            exit 1
 
 #   revert-migrations:
 #     description: Revert the last migration if successfully run in the current workflow.
@@ -36,171 +45,177 @@ orbs:
 #             fi
             
 jobs:
-  build-frontend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [frontend-build]
-      - run:
-          name: Build front-end
-          command: |
-            echo "Installing dependencies"
-            cd frontend
-            npm install
-            echo "Building Frontend"
-            npm run build
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-build
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
+  # build-frontend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [frontend-build]
+  #     - run:
+  #         name: Build front-end
+  #         command: |
+  #           echo "Installing dependencies"
+  #           cd frontend
+  #           npm install
+  #           echo "Building Frontend"
+  #           npm run build
+  #     - save_cache:
+  #         paths: [frontend/node_modules]
+  #         key: frontend-build
+  #     - slack/notify:
+  #         event: fail
+  #         template: basic_fail_1
 
-  build-backend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [backend-build]
-      - run:
-          name: Back-end build
-          command: |
-            echo "Installing dependencies"
-            cd backend
-            npm install
-            echo "Building Backend"
-            npm run build
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-build
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
+  # build-backend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [backend-build]
+  #     - run:
+  #         name: Back-end build
+  #         command: |
+  #           echo "Installing dependencies"
+  #           cd backend
+  #           npm install
+  #           echo "Building Backend"
+  #           npm run build
+  #     - save_cache:
+  #         paths: [backend/node_modules]
+  #         key: backend-build
+  #     - slack/notify:
+  #         event: fail
+  #         template: basic_fail_1
 
-  test-frontend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [frontend-test]
-      - run:
-          name: Frontend Test
-          command: |
-            echo "Installing dependencies"
-            cd frontend
-            npm install
-            echo "Testing Frontend"
-            npm run test
-      - save_cache:
-          paths: [backend/node_modules]
-          key: frontend-test
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
+  # test-frontend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [frontend-test]
+  #     - run:
+  #         name: Frontend Test
+  #         command: |
+  #           echo "Installing dependencies"
+  #           cd frontend
+  #           npm install
+  #           echo "Testing Frontend"
+  #           npm run test
+  #     - save_cache:
+  #         paths: [backend/node_modules]
+  #         key: frontend-test
+  #     - slack/notify:
+  #         event: fail
+  #         template: basic_fail_1
                 
-  test-backend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [backend-test]
-      - run:
-          name: Backend Test
-          command: |
-            echo "Installing dependencies"
-            cd backend
-            npm install
-            echo "Testing Backend"
-            npm run test
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-test
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
+  # test-backend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [backend-test]
+  #     - run:
+  #         name: Backend Test
+  #         command: |
+  #           echo "Installing dependencies"
+  #           cd backend
+  #           npm install
+  #           echo "Testing Backend"
+  #           npm run test
+  #     - save_cache:
+  #         paths: [backend/node_modules]
+  #         key: backend-test
+  #     - slack/notify:
+  #         event: fail
+  #         template: basic_fail_1
             
-  scan-frontend:
+  # scan-frontend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [frontend-scan]
+  #     - run:
+  #         name: Frontend scan
+  #         command: |
+  #           echo "Installing dependencies"
+  #           cd frontend
+  #           npm install
+  #           echo "Scanning for frontend package vulnerabilities"
+  #           npm audit fix --audit-level=critical --force
+  #     - save_cache:
+  #         paths: [backend/node_modules]
+  #         key: frontend-scan
+  #     - slack/notify:
+  #         event: fail
+  #         template: basic_fail_1   
+
+  # scan-backend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [backend-scan]
+  #     - run:
+  #         name: Backend scan
+  #         command: |
+  #           echo "Installing dependencies"
+  #           cd backend
+  #           npm install
+  #           echo "Scanning for package vulnerabilities"
+  #           npm audit fix --audit-level=critical --force
+  #     - save_cache:
+  #         paths: [backend/node_modules]
+  #         key: backend-scan
+  #     - slack/notify:
+  #         event: fail
+  #         template: basic_fail_1
+
+  deploy-infrastructure:
     docker:
-      - image: circleci/node:13.8.0
+      - image: amazon/aws-cli
     steps:
       - checkout
-      - restore_cache:
-          keys: [frontend-scan]
       - run:
-          name: Frontend scan
+          name: Ensure back-end infrastructure exists
           command: |
-            echo "Installing dependencies"
-            cd frontend
-            npm install
-            echo "Scanning for frontend package vulnerabilities"
-            npm audit fix --audit-level=critical --force
-      - save_cache:
-          paths: [backend/node_modules]
-          key: frontend-scan
-      - slack/notify:
-          event: fail
-          template: basic_fail_1   
-
-  scan-backend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [backend-scan]
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --tags project="{PROJECT}" \
+              --stack-name backend-stack-infra-${CIRCLE_WORKFLOW_ID} \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
+              exit 1
+          when: on_fail
       - run:
-          name: Backend scan
+          name: Ensure front-end infrastructure exist
           command: |
-            echo "Installing dependencies"
-            cd backend
-            npm install
-            echo "Scanning for package vulnerabilities"
-            npm audit fix --audit-level=critical --force
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-scan
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
+            aws cloudformation deploy \
+              --template-file .circleci/files/frontend.yml \
+              --tags project="{PROJECT}" \
+              --stack-name frontend-stack-infra-${CIRCLE_WORKFLOW_ID} \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
+              exit 1
+      - run:
+          name: Add back-end ip to ansible inventory
+          command: |
+            echo "[backend]" > inventory
+            exit 1
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/inventory.txt
+      - destroy-environment:
+          WorkflowID: ${CIRCLE_WORKFLOW_ID}
+          when: on_fail
 
-#   deploy-infrastructure:
-#     docker:
-#       # Docker image here that supports AWS CLI
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Ensure back-end infrastructure exists
-#           command: |
-#             aws cloudformation deploy \
-#               --template-file .circleci/files/backend.yml \
-#               #--tags project=your-tag \
-#               # --stack-name "your back-end stack name with workflow id" \
-#               # --parameter-overrides ID="your workflow id"  
-#               exit 1
-#       - run:
-#           name: Ensure front-end infrastructure exist
-#           command: |
-#             aws cloudformation deploy \
-#               --template-file .circleci/files/frontend.yml \
-#               #--tags project=your-tag \
-#               # --stack-name "your front-end stack name with workflow id" \
-#               # --parameter-overrides ID="your workflow id"  
-#               exit 1
-#       - run:
-#           name: Add back-end ip to ansible inventory
-#           command: |
-#             # Your code here
-#             exit 1
-#       - persist_to_workspace:
-#           root: ~/
-#           paths:
-#             - project/.circleci/ansible/inventory.txt
-#       # Here's where you will add some code to rollback on failure      
+      
+      # Here's where you will add some code to rollback on failure      
 
 #   configure-infrastructure:
 #     docker:
@@ -337,27 +352,27 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend:
-          context: SlackAlert
-      - build-backend:
-          context: SlackAlert
-      - test-frontend:
-          requires: [build-frontend]
-          context: SlackAlert
-      - test-backend:
-          requires: [build-backend]
-          context: SlackAlert
-      - scan-backend:
-          requires: [build-backend]
-          context: SlackAlert
-      - scan-frontend:
-          requires: [build-frontend]
-          context: SlackAlert
-      # - deploy-infrastructure:
-      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [test-feature-branch]
+      # - build-frontend:
+      #     context: SlackAlert
+      # - build-backend:
+      #     context: SlackAlert
+      # - test-frontend:
+      #     requires: [build-frontend]
+      #     context: SlackAlert
+      # - test-backend:
+      #     requires: [build-backend]
+      #     context: SlackAlert
+      # - scan-backend:
+      #     requires: [build-backend]
+      #     context: SlackAlert
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      #     context: SlackAlert
+      - deploy-infrastructure
+          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          # filters:
+          #   branches:
+          #     only: [test-feature-branch]
       # - configure-infrastructure:
       #     requires: [deploy-infrastructure]
       # - run-migrations:
