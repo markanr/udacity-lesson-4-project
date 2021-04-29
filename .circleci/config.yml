@@ -189,8 +189,7 @@ jobs:
               --template-file .circleci/files/backend.yml \
               --tags project="{PROJECT}" \
               --stack-name backend-stack-infra-${CIRCLE_WORKFLOW_ID} \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
-          when: on_fail
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
       - run:
           name: Ensure front-end infrastructure exist
           command: |
@@ -218,7 +217,7 @@ jobs:
           WorkflowID: ${CIRCLE_WORKFLOW_ID}
       - slack/notify:
           event: fail
-          template: basic_fail_1  
+          template: basic_fail_1
 
       
       # Here's where you will add some code to rollback on failure      
@@ -358,23 +357,25 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend:
-      #     context: SlackAlert
-      # - build-backend:
-      #     context: SlackAlert
-      # - test-frontend:
-      #     requires: [build-frontend]
-      #     context: SlackAlert
-      # - test-backend:
-      #     requires: [build-backend]
-      #     context: SlackAlert
-      # - scan-backend:
-      #     requires: [build-backend]
-      #     context: SlackAlert
-      # - scan-frontend:
-      #     requires: [build-frontend]
-      #     context: SlackAlert
-      - deploy-infrastructure
+      - build-frontend:
+          context: SlackAlert
+      - build-backend:
+          context: SlackAlert
+      - test-frontend:
+          requires: [build-frontend]
+          context: SlackAlert
+      - test-backend:
+          requires: [build-backend]
+          context: SlackAlert
+      - scan-backend:
+          requires: [build-backend]
+          context: SlackAlert
+      - scan-frontend:
+          requires: [build-frontend]
+          context: SlackAlert
+      - deploy-infrastructure:
+          context: SlackAlert
+
           # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           # filters:
           #   branches:
