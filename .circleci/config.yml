@@ -23,8 +23,7 @@ commands:
             echo "<<parameters.WorkflowID>>"
             echo "<< parameters.WorkflowID >>"
             aws cloudformation delete-stack --stack-name backend-stack-infra-<<parameters.WorkflowID>>
-            aws cloudformation delete-stack --stack-name frontend-stack-infra-<<parameters.WorkflowID>> # dodati zastitu?
-            exit 1
+            aws cloudformation delete-stack --stack-name frontend-stack-infra-<<parameters.WorkflowID>> 
 
 #   revert-migrations:
 #     description: Revert the last migration if successfully run in the current workflow.
@@ -46,137 +45,137 @@ commands:
 #             fi
             
 jobs:
-  # build-frontend:
-  #   docker:
-  #     - image: circleci/node:13.8.0
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [frontend-build]
-  #     - run:
-  #         name: Build front-end
-  #         command: |
-  #           echo "Installing dependencies"
-  #           cd frontend
-  #           npm install
-  #           echo "Building Frontend"
-  #           npm run build
-  #     - save_cache:
-  #         paths: [frontend/node_modules]
-  #         key: frontend-build
-  #     - slack/notify:
-  #         event: fail
-  #         template: basic_fail_1
+  build-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Build front-end
+          command: |
+            echo "Installing dependencies"
+            cd frontend
+            npm install
+            echo "Building Frontend"
+            npm run build
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-build
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
 
-  # build-backend:
-  #   docker:
-  #     - image: circleci/node:13.8.0
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [backend-build]
-  #     - run:
-  #         name: Back-end build
-  #         command: |
-  #           echo "Installing dependencies"
-  #           cd backend
-  #           npm install
-  #           echo "Building Backend"
-  #           npm run build
-  #     - save_cache:
-  #         paths: [backend/node_modules]
-  #         key: backend-build
-  #     - slack/notify:
-  #         event: fail
-  #         template: basic_fail_1
+  build-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Back-end build
+          command: |
+            echo "Installing dependencies"
+            cd backend
+            npm install
+            echo "Building Backend"
+            npm run build
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-build
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
 
-  # test-frontend:
-  #   docker:
-  #     - image: circleci/node:13.8.0
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [frontend-test]
-  #     - run:
-  #         name: Frontend Test
-  #         command: |
-  #           echo "Installing dependencies"
-  #           cd frontend
-  #           npm install
-  #           echo "Testing Frontend"
-  #           npm run test
-  #     - save_cache:
-  #         paths: [backend/node_modules]
-  #         key: frontend-test
-  #     - slack/notify:
-  #         event: fail
-  #         template: basic_fail_1
+  test-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-test]
+      - run:
+          name: Frontend Test
+          command: |
+            echo "Installing dependencies"
+            cd frontend
+            npm install
+            echo "Testing Frontend"
+            npm run test
+      - save_cache:
+          paths: [backend/node_modules]
+          key: frontend-test
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
                 
-  # test-backend:
-  #   docker:
-  #     - image: circleci/node:13.8.0
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [backend-test]
-  #     - run:
-  #         name: Backend Test
-  #         command: |
-  #           echo "Installing dependencies"
-  #           cd backend
-  #           npm install
-  #           echo "Testing Backend"
-  #           npm run test
-  #     - save_cache:
-  #         paths: [backend/node_modules]
-  #         key: backend-test
-  #     - slack/notify:
-  #         event: fail
-  #         template: basic_fail_1
+  test-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-test]
+      - run:
+          name: Backend Test
+          command: |
+            echo "Installing dependencies"
+            cd backend
+            npm install
+            echo "Testing Backend"
+            npm run test
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-test
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
             
-  # scan-frontend:
-  #   docker:
-  #     - image: circleci/node:13.8.0
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [frontend-scan]
-  #     - run:
-  #         name: Frontend scan
-  #         command: |
-  #           echo "Installing dependencies"
-  #           cd frontend
-  #           npm install
-  #           echo "Scanning for frontend package vulnerabilities"
-  #           npm audit fix --audit-level=critical --force
-  #     - save_cache:
-  #         paths: [backend/node_modules]
-  #         key: frontend-scan
-  #     - slack/notify:
-  #         event: fail
-  #         template: basic_fail_1   
+  scan-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-scan]
+      - run:
+          name: Frontend scan
+          command: |
+            echo "Installing dependencies"
+            cd frontend
+            npm install
+            echo "Scanning for frontend package vulnerabilities"
+            npm audit fix --audit-level=critical --force
+      - save_cache:
+          paths: [backend/node_modules]
+          key: frontend-scan
+      - slack/notify:
+          event: fail
+          template: basic_fail_1   
 
-  # scan-backend:
-  #   docker:
-  #     - image: circleci/node:13.8.0
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [backend-scan]
-  #     - run:
-  #         name: Backend scan
-  #         command: |
-  #           echo "Installing dependencies"
-  #           cd backend
-  #           npm install
-  #           echo "Scanning for package vulnerabilities"
-  #           npm audit fix --audit-level=critical --force
-  #     - save_cache:
-  #         paths: [backend/node_modules]
-  #         key: backend-scan
-  #     - slack/notify:
-  #         event: fail
-  #         template: basic_fail_1
+  scan-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-scan]
+      - run:
+          name: Backend scan
+          command: |
+            echo "Installing dependencies"
+            cd backend
+            npm install
+            echo "Scanning for package vulnerabilities"
+            npm audit fix --audit-level=critical --force
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-scan
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
 
   deploy-infrastructure:
     docker:
@@ -191,7 +190,6 @@ jobs:
               --tags project="{PROJECT}" \
               --stack-name backend-stack-infra-${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
-              exit 1
           when: on_fail
       - run:
           name: Ensure front-end infrastructure exist
@@ -201,19 +199,26 @@ jobs:
               --tags project="{PROJECT}" \
               --stack-name frontend-stack-infra-${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
-              exit 1
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            echo "[backend]" > inventory
+            echo "[backend]" > inventory.txt
+            aws ec2 describe-instances \
+                  --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                  --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
+                  --output text >> .circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
             exit 1
       - persist_to_workspace:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
+            - project/backend/
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID}
-          when: on_fail
+      - slack/notify:
+          event: fail
+          template: basic_fail_1  
 
       
       # Here's where you will add some code to rollback on failure      
