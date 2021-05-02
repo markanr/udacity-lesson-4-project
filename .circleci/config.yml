@@ -32,7 +32,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID})
+            SUCCESS=$(curl -H "token: 255c255e-cb8e-411d-90e3-27354d90e996" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID})
             if(( $SUCCESS==1 )); 
             then
               cd ~/project/backend
@@ -264,10 +264,10 @@ jobs:
             if grep -q "has been executed successfully." migration_output.txt
               then
                 echo "Uploading 1 to memstash migration_${CIRCLE_WORKFLOW_ID}"
-                curl -H "Content-Type: text/plain" -H "token: d5832b85-b906-499c-b018-025c5f079911" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
+                curl -H "Content-Type: text/plain" -H "token: 255c255e-cb8e-411d-90e3-27354d90e996" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
               else
                 echo "Uploading 0 to memstash migration_${CIRCLE_WORKFLOW_ID}"
-                curl -H "Content-Type: text/plain" -H "token: 467a673b-2aac-46fd-b5e5-ab8c86e6bd78" --request PUT --data "0" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
+                curl -H "Content-Type: text/plain" -H "token: 255c255e-cb8e-411d-90e3-27354d90e996" --request PUT --data "0" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
             fi
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID}    
@@ -389,25 +389,25 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend:
-          context: SlackAlert
-      - build-backend:
-          context: SlackAlert
-      - test-frontend:
-          requires: [build-frontend]
-          context: SlackAlert
-      - test-backend:
-          requires: [build-backend]
-          context: SlackAlert
-      - scan-backend:
-          requires: [build-backend]
-          context: SlackAlert
-      - scan-frontend:
-          requires: [build-frontend]
-          context: SlackAlert
+      # - build-frontend:
+      #     context: SlackAlert
+      # - build-backend:
+      #     context: SlackAlert
+      # - test-frontend:
+      #     requires: [build-frontend]
+      #     context: SlackAlert
+      # - test-backend:
+      #     requires: [build-backend]
+      #     context: SlackAlert
+      # - scan-backend:
+      #     requires: [build-backend]
+      #     context: SlackAlert
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      #     context: SlackAlert
       - deploy-infrastructure:
           context: SlackAlert
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
               only: [master]
