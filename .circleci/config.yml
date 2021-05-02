@@ -20,7 +20,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm --recursive "s3://udapeople-<<parameters.WorkflowID>>"
+            aws s3 rb --force s3://udapeople-<<parameters.WorkflowID>>
             aws cloudformation delete-stack --stack-name backend-stack-infra-<<parameters.WorkflowID>>
             aws cloudformation delete-stack --stack-name frontend-stack-infra-<<parameters.WorkflowID>> 
 
@@ -231,6 +231,7 @@ jobs:
       - run:
           name: Configure server
           command: |
+            cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID}
@@ -380,28 +381,28 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend:
-      #     context: SlackAlert
-      # - build-backend:
-      #     context: SlackAlert
-      # - test-frontend:
-      #     requires: [build-frontend]
-      #     context: SlackAlert
-      # - test-backend:
-      #     requires: [build-backend]
-      #     context: SlackAlert
-      # - scan-backend:
-      #     requires: [build-backend]
-      #     context: SlackAlert
-      # - scan-frontend:
-      #     requires: [build-frontend]
-      #     context: SlackAlert
+      - build-frontend:
+          context: SlackAlert
+      - build-backend:
+          context: SlackAlert
+      - test-frontend:
+          requires: [build-frontend]
+          context: SlackAlert
+      - test-backend:
+          requires: [build-backend]
+          context: SlackAlert
+      - scan-backend:
+          requires: [build-backend]
+          context: SlackAlert
+      - scan-frontend:
+          requires: [build-frontend]
+          context: SlackAlert
       - deploy-infrastructure:
           context: SlackAlert
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          # filters:
-          #   branches:
-          #     only: [test-feature-branch]
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [test-feature-branch]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
