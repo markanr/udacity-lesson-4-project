@@ -1,17 +1,27 @@
 ---
-- name: "Upgrade packages."
+- name: Update apt packages
+  become: yes
+  apt:
+    update_cache: yes
+
+- name: Upgrade packages
   become: true
   apt:
     upgrade: "yes"
 
-- name: "Install dependencies [NodeJS, npm]"
+- name: Remove redundant dependencies
+  become: yes
+  apt:
+    autoremove: yes
+
+- name: Install dependencies [NodeJS, npm]
   become: true
   apt:
     name: ["nodejs", "npm"]
     state: latest
     update_cache: yes
 
-- name: "install pm2"
+- name: Install pm2
   become: true
   npm:
     name: pm2
@@ -19,12 +29,12 @@
     production: yes
     state: present
 
-- name: "Unarchive backend js files"
-  become: yes
-  unarchive:
-    src: /root/project/backend.tar.gz
-    dest: .
+# - name: Unarchive backend js files
+#   become: yes
+#   unarchive:
+#     src: /root/project/backend.tar.gz
+#     dest: .
 
-- name: "initiate server"
-  become: yes
-  shell: pm2 start npm --name backend
+# - name: Initiate server
+#   become: yes
+#   shell: pm2 start npm --name backend
