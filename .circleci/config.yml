@@ -269,9 +269,9 @@ jobs:
                 echo "Uploading 0 to memstash migration_${CIRCLE_WORKFLOW_ID}"
                 curl -H "Content-Type: text/plain" -H "token: 255c255e-cb8e-411d-90e3-27354d90e996" --request PUT --data "0" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
             fi
-      - destroy-environment:
-          WorkflowID: ${CIRCLE_WORKFLOW_ID}    
-      - revert-migrations 
+      # - destroy-environment:
+      #     WorkflowID: ${CIRCLE_WORKFLOW_ID}    
+      # - revert-migrations 
 
   deploy-frontend:
     docker:
