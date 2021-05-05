@@ -21,9 +21,9 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rb --force s3://udapeople-<<parameters.WorkflowID>>
             aws cloudformation delete-stack --stack-name backend-stack-infra-<<parameters.WorkflowID>>
-            aws cloudformation delete-stack --stack-name frontend-stack-infra-<<parameters.WorkflowID>> 
+            aws cloudformation delete-stack --stack-name frontend-stack-infra-<<parameters.WorkflowID>>
+            aws s3 rb --force s3://udapeople-<<parameters.WorkflowID>>
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.    
@@ -348,11 +348,11 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
-      - aws-cli/install
       - run:
           name: Install dependencies
           command: |
             apk add --update curl nodejs npm
+            pip install awscli
       - run:
           name: Get backend url
           command: |
