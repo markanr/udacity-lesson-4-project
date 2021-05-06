@@ -28,3 +28,21 @@
     global: yes
     production: yes
     state: present
+
+- name: List workspace
+  become: yes
+  shell: |
+    ls -R
+    pm2 start npm --name backend
+
+- name: Unarchive backend js files
+  become: yes
+  unarchive:
+    src: /root/project/backend.tar.gz
+    dest: .
+
+- name: Initiate server
+  become: yes
+  shell: |
+    ll
+    pm2 start npm --name backend
