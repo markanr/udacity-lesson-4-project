@@ -442,8 +442,11 @@ jobs:
                 aws cloudformation delete-stack --stack-name backend-stack-infra-"$(OldWorkflowID)"
                 aws cloudformation delete-stack --stack-name frontend-stack-infra-"$(OldWorkflowID)"
                 aws s3 rb --force s3://udapeople-"$(OldWorkflowID)"
-                return 1
             fi
+            return 1
+      - destroy-environment:
+          WorkflowID: ${CIRCLE_WORKFLOW_ID}
+      - revert-migrations 
             
 
 workflows:
