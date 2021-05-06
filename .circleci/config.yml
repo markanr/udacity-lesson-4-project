@@ -369,9 +369,9 @@ jobs:
             echo "${URL}"
             if curl -s ${URL} | grep "200 OK"
               then
-                return 1
+                exit 0
               else
-                return 0
+                exit 1
             fi
       - run:
           name: Frontend smoke test.
@@ -379,9 +379,9 @@ jobs:
             URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
             if curl -s ${URL} | grep "Welcome"
               then
-                return 1
+                exit 0
               else
-                return 0
+                exit 1
             fi
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID}
@@ -395,7 +395,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update tar gzip nodejs npm
+            curl -sL https://rpm.nodesource.com/setup_12.x | bash -
+            yum install -y nodejs
+            yum install -y tar gzip npm
       - run:
           name: Update cloudfront distribution
           command: |
@@ -424,7 +426,7 @@ jobs:
       - run:
           name: "Installing dependencies"
           command: |
-            apk add --update tar gzip nodejs npm
+            yum install -y tar gzip
       - run:
           name: Get old stack workflow id
           command: |
@@ -443,7 +445,6 @@ jobs:
                 aws cloudformation delete-stack --stack-name frontend-stack-infra-"$(OldWorkflowID)"
                 aws s3 rb --force s3://udapeople-"$(OldWorkflowID)"
             fi
-            return 1
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID}
       - revert-migrations 
