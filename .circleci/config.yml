@@ -415,14 +415,14 @@ jobs:
             export OldWorkflowID=$(aws cloudformation \
               list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
               --no-paginate --output text)
-            export STACKS=($(aws cloudformation list-stacks --query "StackSumarises[*].StackName" \
-              --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
-            echo "Old WorkflowID: $(OldWorkflowID)"
-
+            export STACKS=$(aws cloudformation list-stacks --query "StackSumarises[*].StackName" \
+              --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
+            echo "Old WorkflowID: ${OldWorkflowID}"
+            
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name udapeople-stack \
-              --parameter-overrides WorkflowID="$(OldWorkflowID)"
+              --parameter-overrides WorkflowID="${OldWorkflowID}""
               --tags project=udapeople &
 
       - destroy-environment:
@@ -446,17 +446,18 @@ jobs:
               --no-paginate --output text)
             export STACKS=$(aws cloudformation list-stacks --query "StackSumarises[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
+            echo "${OldWorkflowID}"
+            echo "STACKS: ${STACKS}"
 
       - run:
           name: Remove old stacks and files
           command: |
-            echo "Old WorkflowID: $(OldWorkflowID)"
-            echo "STACKS: $(STACKS)"
-            if [[ "$(STACKS=[@]" =~ "$(OldWorkflowID)" ]]
+
+            if [[ "${STACKS=[@]}" =~ "${OldWorkflowID}" ]]
               then
-                aws cloudformation delete-stack --stack-name backend-stack-infra-"$(OldWorkflowID)"
-                aws cloudformation delete-stack --stack-name frontend-stack-infra-"$(OldWorkflowID)"
-                aws s3 rb --force s3://udapeople-"$(OldWorkflowID)"
+                aws cloudformation delete-stack --stack-name backend-stack-infra-"${OldWorkflowID}"
+                aws cloudformation delete-stack --stack-name frontend-stack-infra-"${OldWorkflowID}"
+                aws s3 rb --force s3://udapeople-"${OldWorkflowID}"
             fi
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID}
