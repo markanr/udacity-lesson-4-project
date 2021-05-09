@@ -417,7 +417,7 @@ jobs:
               --no-paginate --output text)
             export STACKS=($(aws cloudformation list-stacks --query "StackSumarises[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
-            echo Old WorkflowID: "$(OldWorkflowID)"
+            echo "Old WorkflowID: $(OldWorkflowID)"
 
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
@@ -446,12 +446,12 @@ jobs:
               --no-paginate --output text)
             export STACKS=$(aws cloudformation list-stacks --query "StackSumarises[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
-            echo "Old WorkflowID: $(OldWorkflowID)"
-            echo "Old WorkflowID: $(OldWorkflowID)"
-            echo "STACKS: $(STACKS)"
+
       - run:
           name: Remove old stacks and files
           command: |
+            echo "Old WorkflowID: $(OldWorkflowID)"
+            echo "STACKS: $(STACKS)"
             if [[ "$(STACKS=[@]" =~ "$(OldWorkflowID)" ]]
               then
                 aws cloudformation delete-stack --stack-name backend-stack-infra-"$(OldWorkflowID)"
