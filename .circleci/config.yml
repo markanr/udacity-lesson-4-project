@@ -412,11 +412,9 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
-            aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text
             export OldWorkflowID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
-            echo "${OldWorkflowID}"
-            echo "${CIRCLE_WORKFLOW_ID}"            
-            aws cloudformation deploy --template-file .circleci/files/cloudfront.yml --stack-name udapeople-stack --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" --tags project=udapeople &
+            aws cloudformation deploy --template-file .circleci/files/cloudfront.yml --stack-name udapeople-stack --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" --tags project=udapeople
+            
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID}
       - revert-migrations 
@@ -435,13 +433,16 @@ jobs:
           command: |
             export OldWorkflowID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
             export STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
+            echo "OWID"
             echo "${OldWorkflowID}"
+            echo "${CIRCLE_WORKFLOW_ID}"
+            echo "STACKS"
             echo "${STACKS[@]}"
-            aws cloudformation list-exports
+            echo "%%%%"
       - run:
           name: Remove old stacks and files
           command: |
-            if [[ "${STACKS[@]}" =~ "${CIRCLE_WORKFLOW_ID}" ]]
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
               then
                 aws cloudformation delete-stack --stack-name backend-stack-infra-"${CIRCLE_WORKFLOW_ID}"
                 aws cloudformation delete-stack --stack-name frontend-stack-infra-"${CIRCLE_WORKFLOW_ID}"
