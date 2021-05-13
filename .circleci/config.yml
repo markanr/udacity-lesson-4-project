@@ -353,6 +353,9 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"           
             tar -C backend -czvf backend.tar.gz .
             cd .circleci/ansible
+            echo "#########"
+            cat inventory.txt
+            echo "#########"
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID}
@@ -469,14 +472,14 @@ workflows:
           filters:
             branches:
               only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
-      # - deploy-backend:
-      #     requires: [run-migrations]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
