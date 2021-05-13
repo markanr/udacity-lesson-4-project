@@ -53,6 +53,7 @@ jobs:
           command: |
             echo "Installing dependencies"
             cd frontend
+            npm update
             npm install
             echo "Building Frontend"
             npm run build
@@ -75,6 +76,7 @@ jobs:
           command: |
             echo "Installing dependencies"
             cd backend
+            npm update
             npm install
             echo "Building Backend"
             npm run build
