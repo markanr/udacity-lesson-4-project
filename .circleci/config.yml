@@ -253,6 +253,10 @@ jobs:
     steps:
       - checkout
       - aws-cli/install
+      - attach_workspace: 
+          at: ~/
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Prepare env file
           command: |
@@ -450,25 +454,25 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend:
-      #     context: SlackAlert
-      # - build-backend:
-      #     context: SlackAlert
-      # - test-frontend:
-      #     requires: [build-frontend]
-      #     context: SlackAlert
-      # - test-backend:
-      #     requires: [build-backend]
-      #     context: SlackAlert
-      # - scan-backend:
-      #     requires: [build-backend]
-      #     context: SlackAlert
-      # - scan-frontend:
-      #     requires: [build-frontend]
-      #     context: SlackAlert
+      - build-frontend:
+          context: SlackAlert
+      - build-backend:
+          context: SlackAlert
+      - test-frontend:
+          requires: [build-frontend]
+          context: SlackAlert
+      - test-backend:
+          requires: [build-backend]
+          context: SlackAlert
+      - scan-backend:
+          requires: [build-backend]
+          context: SlackAlert
+      - scan-frontend:
+          requires: [build-frontend]
+          context: SlackAlert
       - deploy-infrastructure:
           context: SlackAlert
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
               only: [master]
@@ -480,8 +484,8 @@ workflows:
           requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
       # - cleanup:
